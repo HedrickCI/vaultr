@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaultr - literary archive</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <a href="#app-container" class="skip-link">Skip to main content</a>
+
+    <header class="app-header">
+        <div class="nav-content">
+            <span class="logo">Vaultr</span>
+            <nav aria-label="Main Navigation">
+                <ul class="nav-links">
+                    <li><button class="nav-btn" onclick="showPage('home')">Home</button></li>
+                    <li><button class="nav-btn" onclick="showPage('vault')">Vault</button></li>
+                    <li><button class="nav-btn" onclick="showPage('add')">Add</button></li>
+                    <li><button class="nav-btn" onclick="showPage('settings')">Settings</button></li>
+                    <li><button class="nav-btn" onclick="showPage('about')">About</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app-container" tabindex="-1">
+        <div id="live-announcer" role="status" aria-live="polite" class="sr-only"></div>
+
+        <section id="home" class="page">
+            <h1 class="section-title">Reading Progress</h1>
+            <article class="card challenge-card interactive-card animate-up">
+                <div class="progress-header">
+                    <h2 id="completion-message">Enter, the halls of the colossal wreck!</h2>
+                    <span id="percent-text">0%</span>
+                </div>
+                <div class="progress-bar-container"><div id="progress-fill"></div></div>
+                <div class="progress-footer">
+                    <p id="progress-count">0 / 40 books</p>
+                    <p id="velocity-text">0 pages/day to finish</p>
+                </div>
+            </article>
+
+            <div class="dashboard-grid">
+                <article class="card interactive-card animate-up" style="animation-delay: 0.1s;">
+                    <h2>most read genr</h2><ul id="top-genr"></ul>
+                </article>
+                <article class="card interactive-card animate-up" style="animation-delay: 0.2s;">
+                    <h2>most read authors</h2><ul id="repeated-authors"></ul>
+                </article>
+                <article class="card interactive-card animate-up" style="animation-delay: 0.3s;">
+                    <h2>read log</h2><div id="current-read-log">None</div>
+                </article>
+                <article class="card interactive-card animate-up" style="animation-delay: 0.4s;">
+                    <h2>last week activity</h2><p id="weekly-trend">0 finished</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="vault" class="page" style="display:none;">
+            <h1 class="section-title">records</h1>
+            <div class="card vault-controls">
+                <input type="text" id="searchInput" onkeyup="searchBooks()" placeholder="Search library..." class="rounded-input half">
+                <select id="sortOption" onchange="sortVault(this.value)" class="rounded-input half">
+                    <option value="title">Sort by Title</option>
+                    <option value="author">Sort by Author</option>
+                    <option value="amount">Sort by Pages</option>
+                    <option value="date">Sort by Date</option>
+                </select>
+            </div>
+            <div class="card table-card">
+                <div class="table-responsive">
+                    <table id="mainTable">
+                        <thead><tr><th>Book & Author</th><th>Pages</th><th>Status & Category</th><th>Added</th><th>Actions</th></tr></thead>
+                        <tbody id="bookBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="add" class="page" style="display:none;">
+            <h1 class="section-title">add new book</h1>
+            <div class="card">
+                <div id="validation-error" class="error-banner" style="display:none;"></div>
+                <div id="add-success" class="success-banner" style="display:none;">Nevermore!</div>
+                
+                <label for="bookTitle">Title</label><input type="text" id="bookTitle" class="rounded-input">
+                <label for="bookAuthor">Author</label><input type="text" id="bookAuthor" class="rounded-input">
+                <label for="bookPages">Pages</label><input type="number" id="bookPages" class="rounded-input">
+                <label for="bookCategory">Genre</label><select id="bookCategory" class="rounded-input"></select>
+                
+                <label style="display:flex; align-items:center; gap:10px; margin:15px 0; cursor:pointer;">
+                    <input type="checkbox" id="markFinished" onchange="toggleDateField(this.checked)"> done reading
+                </label>
+                <div id="dateField" style="display:none;">
+                    <label for="bookDate">date done</label><input type="date" id="bookDate" class="rounded-input">
+                </div>
+                <button onclick="addBook()" class="gr-button primary">Add book</button>
+            </div>
+        </section>
+
+        <section id="settings" class="page" style="display:none;">
+            <h1 class="section-title">Vaultr augmentations</h1>
+            <div class="card">
+                <h3>Goal customization</h3>
+                <label>current reading goal quantity</label>
+                <input type="number" id="goalInput" class="rounded-input">
+                <button onclick="updateGoal()" class="gr-button">update goal</button>
+                
+                <label style="margin-top:15px; display:block;">add new genre/category</label>
+                <input type="text" id="newGenreInput" class="rounded-input" placeholder="e.g. Theory">
+                <button onclick="addNewGenre()" class="gr-button">Add Category</button>
+                <hr>
+                <button class="gr-button" onclick="toggleDarkMode()">switch dark mode on/off</button>
+                <button class="gr-button" onclick="exportData()">export arch (json)
+                </button>
+                <div style="margin-top:10px;">
+                    <label>import archive (json)</label>
+                    <input type="file" id="importFile" accept=".json" class="rounded-input">
+                    <button class="gr-button" onclick="importData()">restore from archive (well you know it, json)</button>
+                </div>
+                <hr>
+                <button class="gr-button danger" onclick="clearAllData()">erase data</button>
+            </div>
+        </section>
+
+        <section id="about" class="page" style="display:none;">
+            <h1 class="section-title">GTKM</h1>
+            <div class="card interactive-card">
+                <p><strong>Hedrick is confused, but at least he is awake long enough to get confused enough.</strong></p>
+                <p>Vaultr was developed as an homage to goodreads. I intend to implement soo much more to it haha</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
